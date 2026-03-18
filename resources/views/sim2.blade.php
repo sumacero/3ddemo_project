@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>レベル1 逆投影シミュレーション</title>
+  <title>レベル2 逆投影シミュレーション</title>
   <style>
     body { font-family: sans-serif; padding: 16px; }
     .page-title { margin-bottom: 24px; }
@@ -60,7 +60,7 @@
       padding: 0;
       text-align: center;
       vertical-align: middle;
-      background: #fff;
+      transition: background 0.2s;
       font-size: 14px;
       line-height: 1;
     }
@@ -70,13 +70,45 @@
       font-size: 12px;
       color: #666;
     }
+
+    .legend {
+      margin-top: 12px;
+      width: 100%;
+      max-width: 220px;
+    }
+
+    .legend-title {
+      font-size: 12px;
+      color: #333;
+      margin-bottom: 6px;
+    }
+
+    .colorbar {
+      height: 12px;
+      border-radius: 999px;
+      border: 1px solid #bbb;
+      background: linear-gradient(
+        90deg,
+        hsl(220, 90%, 92%) 0%,
+        hsl(55, 90%, 70%) 50%,
+        hsl(10, 90%, 47%) 100%
+      );
+    }
+
+    .legend-scale {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #555;
+      margin-top: 6px;
+    }
   </style>
 </head>
 <body>
   <div class="top-actions">
     <a class="btn-home" href="{{ url('/') }}">HOMEへ戻る</a>
   </div>
-  <h1 class="page-title">レベル1 逆投影シミュレーション（3×3）</h1>
+  <h1 class="page-title">レベル2 逆投影シミュレーション（3×3）</h1>
 
   <div class="layout-root">
     <table id="output-table">
@@ -171,8 +203,19 @@
     <div class="grid-caption">
       各セルは対応する H と V の交点で、値は H[col] + V[row] です。
     </div>
+
+    <div class="legend" aria-label="値と色の対応">
+      <div class="legend-title">値 ↔ 色（0〜30）</div>
+      <div class="colorbar" role="img" aria-label="青から赤へのカラーバー"></div>
+      <div class="legend-scale" aria-hidden="true">
+        <span>0</span>
+        <span>15</span>
+        <span>30</span>
+      </div>
+    </div>
   </div>
 
-  @vite('resources/ts/sim.ts')
+  @vite('resources/ts/sim2.ts')
 </body>
 </html>
+
