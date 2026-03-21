@@ -1,59 +1,76 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 3D Reconstruction Simulator (Back-projection Method)
+### 逆投影法を用いた3次元化シミュレーター
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+画像再構成理論の基礎である「逆投影法（Back-projection）」を直感的に理解するためのインタラクティブ・シミュレーターを構築しました。
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🤖 AI駆動型開発（AI-Driven Development）の導入
+本プロジェクトは、次世代の開発手法である「AI駆動型開発」の実践を目的としています。
+AIエディタ **Cursor** をフル活用し、以下のプロセスで開発効率を極限まで高めました。
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **ペアプログラミング:** ロジックの複雑な「逆投影計算」や「リアルタイム連動」において、AIと対話しながらバグの早期発見と最適化を実施。
+- **インフラトラブルシューティング:** Linux環境（VirtualBox/Ubuntu）特有の権限エラー（EACCES等）に対し、AIの知見を活用して迅速に解決。
+- **高速なフィードバックループ:** Cursorの機能を活かし、仕様変更（レベル1からレベル3への進化）を10時間という短期間で完遂。
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+「AIを単なる補助ツールではなく、開発のパートナーとしていかに乗りこなすか」という、現代のエンジニアに求められるプロンプトエンジニアリング能力と、実行力を重視して開発に臨みました。
 
-## Learning Laravel
+## 🚀 プロジェクト概要
+本プロジェクトは、CTスキャンや3次元復元の基礎理論である「逆投影法」を、3×3の低解像度モデルで視覚化したものです。
+2方向（水平・垂直）からの投影データ（積分値）を、計算によって元の3次元（2次元平面）構造へ再構成するプロセスを体験できます。
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## 📸 デモ画面
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Level 1: 
+デモのベースとなるシンプルな表示。
+![Level 2 Demo](./docs/images/level1.jpg)
 
-## Laravel Sponsors
+### Level 2: ヒートマップ表示
+数値の大きさを色（青〜赤）のグラデーションで表現しました。
+![Level 2 Demo](./docs/images/level2.jpg)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Level 3: インタラクティブ・シミュレーション（完成形）
+水平・垂直のスライダーを操作することで、リアルタイムに中央の輝度分布が更新されます。
+![Level 3 Demo](./docs/images/level3.jpg) 
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## 🛠 実装のこだわり（10時間の実績）
 
-## Contributing
+### 1. 段階的な開発アプローチ
+- **Level 1:** アルゴリズムの数学的妥当性の検証（数値計算のみ）。
+- **Level 2:** 計算結果の視覚化。カラーパレットによる定量的評価の導入。
+- **Level 3:** スライダーUIによる動的フィードバックの実装。
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 2. インタラクティブな操作性
+- 水平（H）スライダーを垂直に、垂直（V）スライダーを水平に配置。物理的なカメラの視線方向と操作を一致させるUI/UXを設計しました。
+- 入力値と出力値の双方向リアルタイム連動（JavaScript/Vite環境）により、試行錯誤のループを高速化しました。
 
-## Code of Conduct
+### 3. 技術スタック
+- **Backend:** PHP 8.4 / Laravel 12
+- **Frontend:** TypeScript
+- **Build Tool:** Vite (npm run dev によるホットリロード環境)
+- **Environment:** Ubuntu (VirtualBox) 内のDocker上でのインフラ構築から実施
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## 📖 原理の説明
+各セル $(col, row)$ の値は、対応する水平投影 $H_{col}$ と垂直投影 $V_{row}$ の和として算出されます。
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+$$Value(col, row) = H_{col} + V_{row}$$
 
-## License
+これは、投影データを逆方向に引き延ばして重ね合わせる「単純逆投影法」を最もシンプルにモデル化したものです。
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## ⚡ セットアップ
+```bash
+# リポジトリのクローン後
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+
+# 実行
+php artisan serve
+npm run dev
