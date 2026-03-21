@@ -33,6 +33,7 @@
             <div class="btn-row">
                 <a class="btn" href="{{ url('/sim') }}">レベル1を開く</a>
                 <a class="btn" href="{{ url('/sim2') }}">レベル2を開く</a>
+                <a class="btn" href="{{ url('/sim3') }}">レベル3を開く</a>
             </div>
         </div>
     </body>

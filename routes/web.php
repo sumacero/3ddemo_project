@@ -14,3 +14,7 @@ Route::get('/sim2', function () {
     return view('sim2');
 });
 
+Route::get('/sim3', function () {
+    return view('sim3');
+});
+
