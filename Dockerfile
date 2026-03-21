@@ -1,7 +1,7 @@
 # --- Stage 1: Vite のビルド (Node.js) ---
 FROM node:22 AS node-builder
 WORKDIR /app
-# カレントディレクトリ（GitHubのルート）をすべてコピー
+# GitHubのルートディレクトリにある全ファイルをコピー
 COPY . . 
 RUN npm install && npm run build
 
@@ -15,33 +15,36 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd pdo pdo_mysql bcmath intl
 
-# Apacheの設定 (mod_rewrite有効化)
+# 1. Apacheのmod_rewriteを有効化（Laravelのルーティングに必須）
 RUN a2enmod rewrite
 
-# ApacheのDocumentRootをLaravelのpublicディレクトリに強制変更
-RUN sed -ri -e 's!/var/www/html!/var/www/project/public!g' /etc/apache2/sites-available/*.conf
-RUN sed -i 's!/var/www/!/var/www/project/public!g' /etc/apache2/apache2.conf
+# 2. Apacheのサイト設定ファイルを新規作成（DocumentRootの設定とAllowOverrideの許可）
+RUN echo '<VirtualHost *:80>\n\
+    DocumentRoot /var/www/project/public\n\
+    <Directory /var/www/project/public>\n\
+        Options Indexes FollowSymLinks\n\
+        AllowOverride All\n\
+        Require all granted\n\
+    </Directory>\n\
+    ErrorLog ${APACHE_LOG_DIR}/error.log\n\
+    CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
+</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
 WORKDIR /var/www/project
 
 # プロジェクトファイルをすべてコピー
 COPY . .
 
-# Stage 1 でビルドしたJS/CSSをコピー
+# Stage 1 でビルドしたJS/CSS（Vite）をコピー
 COPY --from=node-builder /app/public/build ./public/build
 
-# Composerインストール
+# Composerインストールと実行
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-# Renderでは --no-dev で本番最適化
 RUN composer install --no-dev --optimize-autoloader
 
-# 権限設定
-RUN chown -R www-data:www-data storage bootstrap/cache
-
-# Apacheの設定ファイルを AllowOverride All に書き換え
-RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
-RUN sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/sites-available/000-default.conf
+# 3. 権限設定（storage, cache, databaseへの書き込みを許可）
+RUN chown -R www-data:www-data storage bootstrap/cache database
+RUN chmod -R 775 storage bootstrap/cache database
 
 EXPOSE 80
 CMD ["apache2-foreground"]
-
