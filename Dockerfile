@@ -47,4 +47,10 @@ RUN chown -R www-data:www-data storage bootstrap/cache database
 RUN chmod -R 775 storage bootstrap/cache database
 
 EXPOSE 80
-CMD ["apache2-foreground"]
+
+# entrypoint.sh をコピーして実行権限を与える
+COPY entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# 最後に CMD ではなく ENTRYPOINT を指定
+ENTRYPOINT ["entrypoint.sh"]

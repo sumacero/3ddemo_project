@@ -70,6 +70,12 @@
       font-size: 12px;
       color: #666;
     }
+    .grid-caption p {
+      margin: 0;
+    }
+    .grid-caption-range {
+      margin-top: 8px;
+    }
 
     .legend {
       margin-top: 12px;
@@ -201,7 +207,8 @@
     </table>
 
     <div class="grid-caption">
-      各セルは対応する H と V の交点で、値は H[col] + V[row] です。
+      <p>各セルは対応する H と V の交点で、値は H[col] + V[row] です。</p>
+      <p class="grid-caption-range">入力の範囲は 0〜15 です。</p>
     </div>
 
     <div class="legend" aria-label="値と色の対応">

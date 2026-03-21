@@ -2,25 +2,46 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#fafafa" />
   <title>レベル3 逆投影シミュレーション</title>
   <style>
-    body { font-family: sans-serif; padding: 16px; }
-    .page-title { margin-bottom: 24px; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: sans-serif;
+      padding: 16px;
+      padding-left: max(16px, env(safe-area-inset-left));
+      padding-right: max(16px, env(safe-area-inset-right));
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+      margin: 0;
+      touch-action: manipulation;
+      -webkit-text-size-adjust: 100%;
+    }
+    .page-title { margin-bottom: 24px; font-size: clamp(1.1rem, 4vw, 1.5rem); line-height: 1.3; }
     .top-actions { margin-bottom: 12px; }
     .btn-home {
-      display: inline-block;
-      padding: 8px 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 10px 16px;
       border-radius: 8px;
       border: 1px solid #111;
       background: #111;
       color: #fff;
       text-decoration: none;
-      font-size: 14px;
+      font-size: 15px;
     }
-    .btn-home:hover { background: #000; }
+    .btn-home:hover,
+    .btn-home:active { background: #000; }
 
     .layout-root {
-      display: inline-block;
+      display: block;
+      width: 100%;
       max-width: 100%;
       box-sizing: border-box;
       border: 1px solid #ddd;
@@ -29,6 +50,17 @@
       background: #fafafa;
       overflow: visible;
       vertical-align: top;
+    }
+
+    /* グリッドが画面幅を超える場合は横スクロール（スマホ） */
+    .sim-grid-scroll {
+      overflow-x: auto;
+      overflow-y: visible;
+      -webkit-overflow-scrolling: touch;
+      max-width: 100%;
+      margin: 0 -4px;
+      padding: 4px;
+      overscroll-behavior-x: contain;
     }
 
     /* 出力セル・H/Vスライダー（トラック長は共通） */
@@ -109,6 +141,12 @@
       box-sizing: border-box;
       font-size: 12px;
       color: #666;
+    }
+    .grid-caption p {
+      margin: 0;
+    }
+    .grid-caption-range {
+      margin-top: 8px;
     }
 
     .legend {
@@ -317,6 +355,61 @@
       background: #fff;
       transition: background 0.2s;
     }
+
+    /* スマホ・タッチ向け: グリッド縮小・スライダー操作しやすく */
+    @media (max-width: 640px) {
+      body {
+        padding: 12px;
+        padding-left: max(12px, env(safe-area-inset-left));
+        padding-right: max(12px, env(safe-area-inset-right));
+      }
+      .layout-root {
+        padding: 12px 10px 10px;
+        --cell-size: 56px;
+        --slider-track-length: min(120px, 32vw);
+        /* タッチ用に入力を大きくする分の余白 */
+        --h-cell-height: calc(var(--slider-track-length) + 52px);
+        --v-cell-width: calc(var(--slider-track-length) + 96px);
+      }
+      .grid-corner {
+        font-size: 10px;
+        line-height: 1.25;
+        padding: 4px;
+      }
+      .h-slider-vertical-wrap {
+        padding: 8px 4px;
+      }
+      .v-slider-cell {
+        padding: 8px 6px;
+        min-height: 48px;
+      }
+      .v-slider-cell input[type="range"] {
+        height: 28px;
+        min-height: 28px;
+      }
+      .h-slider-cell .pixel-input,
+      .v-slider-cell .pixel-input {
+        font-size: 16px;
+        min-height: 44px;
+      }
+      .grid-caption,
+      .legend-title,
+      .legend-scale {
+        font-size: 13px;
+      }
+      .colorbar {
+        height: 14px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .layout-root {
+        --cell-size: 52px;
+        --slider-track-length: min(100px, 28vw);
+        --h-cell-height: calc(var(--slider-track-length) + 52px);
+        --v-cell-width: calc(var(--slider-track-length) + 96px);
+      }
+    }
   </style>
 </head>
 <body>
@@ -326,6 +419,7 @@
   <h1 class="page-title">レベル3 逆投影シミュレーション（3×3）</h1>
 
   <div class="layout-root">
+    <div class="sim-grid-scroll" role="region" aria-label="シミュレーション操作エリア（横にスクロールできます）">
     <div class="sim-grid-wrap">
       <!-- 上段: Hスライダー（出力列の真上に配置） -->
       <div class="sim-grid-top">
@@ -335,21 +429,21 @@
           <div class="h-slider-vertical-wrap">
             <input id="h0-slider" type="range" min="0" max="15" step="1" value="0" aria-label="H0 スライダー" />
           </div>
-          <input id="h0" class="pixel-input" type="number" min="0" max="15" value="0" aria-label="H0" />
+          <input id="h0" class="pixel-input" type="number" min="0" max="15" value="0" inputmode="numeric" aria-label="H0" />
         </div>
         <div class="h-slider-cell" aria-label="H1">
           <span class="slider-label-text">H1</span>
           <div class="h-slider-vertical-wrap">
             <input id="h1-slider" type="range" min="0" max="15" step="1" value="0" aria-label="H1 スライダー" />
           </div>
-          <input id="h1" class="pixel-input" type="number" min="0" max="15" value="0" aria-label="H1" />
+          <input id="h1" class="pixel-input" type="number" min="0" max="15" value="0" inputmode="numeric" aria-label="H1" />
         </div>
         <div class="h-slider-cell" aria-label="H2">
           <span class="slider-label-text">H2</span>
           <div class="h-slider-vertical-wrap">
             <input id="h2-slider" type="range" min="0" max="15" step="1" value="0" aria-label="H2 スライダー" />
           </div>
-          <input id="h2" class="pixel-input" type="number" min="0" max="15" value="0" aria-label="H2" />
+          <input id="h2" class="pixel-input" type="number" min="0" max="15" value="0" inputmode="numeric" aria-label="H2" />
         </div>
       </div>
 
@@ -360,7 +454,7 @@
             <span class="slider-label-text">V0</span>
             <input id="v0-slider" type="range" min="0" max="15" step="1" value="0" aria-label="V0 スライダー" />
           </label>
-          <input id="v0" class="pixel-input" type="number" min="0" max="15" value="0" aria-label="V0" />
+          <input id="v0" class="pixel-input" type="number" min="0" max="15" value="0" inputmode="numeric" aria-label="V0" />
         </div>
         <div class="output-cell" data-row="0" data-col="0"></div>
         <div class="output-cell" data-row="0" data-col="1"></div>
@@ -371,7 +465,7 @@
             <span class="slider-label-text">V1</span>
             <input id="v1-slider" type="range" min="0" max="15" step="1" value="0" aria-label="V1 スライダー" />
           </label>
-          <input id="v1" class="pixel-input" type="number" min="0" max="15" value="0" aria-label="V1" />
+          <input id="v1" class="pixel-input" type="number" min="0" max="15" value="0" inputmode="numeric" aria-label="V1" />
         </div>
         <div class="output-cell" data-row="1" data-col="0"></div>
         <div class="output-cell" data-row="1" data-col="1"></div>
@@ -382,25 +476,27 @@
             <span class="slider-label-text">V2</span>
             <input id="v2-slider" type="range" min="0" max="15" step="1" value="0" aria-label="V2 スライダー" />
           </label>
-          <input id="v2" class="pixel-input" type="number" min="0" max="15" value="0" aria-label="V2" />
+          <input id="v2" class="pixel-input" type="number" min="0" max="15" value="0" inputmode="numeric" aria-label="V2" />
         </div>
         <div class="output-cell" data-row="2" data-col="0"></div>
         <div class="output-cell" data-row="2" data-col="1"></div>
         <div class="output-cell" data-row="2" data-col="2"></div>
       </div>
+    </div>
+    </div>
 
-      <div class="grid-caption">
-        各セルは H[col] + V[row] です。
-      </div>
+    <div class="grid-caption">
+      <p>各セルは H[col] + V[row] です。</p>
+      <p class="grid-caption-range">入力の範囲は 0〜15 です。</p>
+    </div>
 
-      <div class="legend" aria-label="値と色の対応">
-        <div class="legend-title">値 ↔ 色（0〜30）</div>
-        <div class="colorbar" role="img" aria-label="青から赤へのカラーバー"></div>
-        <div class="legend-scale" aria-hidden="true">
-          <span>0</span>
-          <span>15</span>
-          <span>30</span>
-        </div>
+    <div class="legend" aria-label="値と色の対応">
+      <div class="legend-title">値 ↔ 色（0〜30）</div>
+      <div class="colorbar" role="img" aria-label="青から赤へのカラーバー"></div>
+      <div class="legend-scale" aria-hidden="true">
+        <span>0</span>
+        <span>15</span>
+        <span>30</span>
       </div>
     </div>
   </div>

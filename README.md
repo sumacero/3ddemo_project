@@ -21,7 +21,7 @@ AIエディタ **Cursor** をフル活用し、以下のプロセスで開発効
 
 ## 📸 デモ画面
 
-### Level 1: 
+### Level 1: 白黒表示
 デモのベースとなるシンプルな表示。
 ![Level 2 Demo](./docs/images/level1.jpg)
 
